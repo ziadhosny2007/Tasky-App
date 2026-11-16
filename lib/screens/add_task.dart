@@ -24,9 +24,11 @@ class _AddTaskState extends State<AddTask> {
     required String date,
     required int priority,
   }) async {
-     return await db.insertData('''
+    return await db.insertData(
+      '''
     INSERT INTO tasks (task, des, category, time, date, priority, is_done)
-    VALUES ('$title', '$des', '$category', '$time', '$date', $priority, ${0})''');
+    VALUES ('$title', '$des', '$category', '$time', '$date', $priority, ${0})''',
+    );
   }
 
   DateTime selectedDate = DateTime.now();
@@ -441,7 +443,7 @@ class _AddTaskState extends State<AddTask> {
         ),
       ),
 
-      floatingActionButton: SafeArea(
+      bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: MaterialButton(

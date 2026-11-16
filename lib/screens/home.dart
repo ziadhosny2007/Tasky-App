@@ -8,7 +8,6 @@ import 'package:tasky/core/widget/task_card.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
-
   @override
   State<Home> createState() => _HomeState();
 }
@@ -22,11 +21,14 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     loadTasks();
-    loading(.6);
   }
 
+  final date = DateFormat('MMM d, y').format(DateTime.now());
+
   Future<void> loadTasks() async {
-    final data = await db.selectData('SELECT * FROM tasks');
+    final data = await db.selectData(
+      "SELECT * FROM tasks WHERE date = '$date'",
+    );
     if (!mounted) return;
     setState(() {
       tasks = data;
@@ -41,20 +43,20 @@ class _HomeState extends State<Home> {
     {"icon": Icons.favorite_border_outlined, "title": "Health", "tasks": 2},
   ];
 
-  double value = .0;
-  void loading(double v) async {
-    double n = v / 10;
-    value = n;
-    while (v > value) {
-      await Future.delayed(Duration(milliseconds: 50), () {
-        value += n;
-        setState(() {});
-      });
-    }
+  double get progress {
+    if (tasks.isEmpty) return 0;
+    final done = tasks.where((e) => e["is_done"] == 1).length;
+    return done / tasks.length;
   }
 
   List<bool> presed = [false, false, false, false];
-  List<bool> flage = [false, false, false, false];
+  int? selectedCategory;
+  List<Map> get filteredTasks {
+    if (selectedCategory == null) return tasks;
+    final cat = categories[selectedCategory!]["title"];
+    return tasks.where((e) => e["category"] == cat).toList();
+  }
+
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final dayNumber = DateFormat('d').format(now);
@@ -147,31 +149,40 @@ class _HomeState extends State<Home> {
                             ],
                           ),
                         ),
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            SizedBox(
-                              width: 72,
-                              height: 72,
-                              child: CircularProgressIndicator(
-                                value: value,
-                                strokeWidth: 7,
-                                strokeCap: StrokeCap.round, // أطراف مدورة
-                                backgroundColor: Colors.white24,
-                                valueColor: AlwaysStoppedAnimation(
-                                  AppColors.highlight2,
+                        TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0, end: progress),
+                          duration: const Duration(milliseconds: 600),
+                          curve: Curves.easeOut,
+
+                          builder: (context, v, _) {
+                            loadTasks();
+                            return Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 72,
+                                  height: 72,
+                                  child: CircularProgressIndicator(
+                                    value: v,
+                                    strokeWidth: 7,
+                                    strokeCap: StrokeCap.round,
+                                    backgroundColor: Colors.white24,
+                                    valueColor: AlwaysStoppedAnimation(
+                                      AppColors.highlight2,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            Text(
-                              '${(value * 100).round()}%',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                                Text(
+                                  '${(v * 100).round()}%',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -208,9 +219,13 @@ class _HomeState extends State<Home> {
 
                                 onTap: () {
                                   HapticFeedback.lightImpact();
-                                  flage = flage.map((e) => e = false).toList();
-                                  flage[index] = !flage[index];
-                                  setState(() {});
+                                  loadTasks();
+                                  setState(() {
+                                    selectedCategory =
+                                        (selectedCategory == index)
+                                        ? null
+                                        : index;
+                                  });
                                 },
                                 child: AnimatedScale(
                                   scale: presed[index] ? 0.90 : 1,
@@ -220,7 +235,9 @@ class _HomeState extends State<Home> {
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     margin: EdgeInsets.all(0),
-                                    elevation: (flage[index]) ? 2 : .5,
+                                    elevation: (selectedCategory == index)
+                                        ? 2
+                                        : .5,
                                     child: Container(
                                       alignment: .topLeft,
                                       width: 80,
@@ -230,7 +247,7 @@ class _HomeState extends State<Home> {
                                         vertical: 12,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: (flage[index])
+                                        color: (selectedCategory == index)
                                             ? AppColors.highlight2
                                             : Theme.of(
                                                 context,
@@ -242,7 +259,7 @@ class _HomeState extends State<Home> {
                                           Icon(
                                             categories[index]["icon"],
                                             size: 22,
-                                            color: (flage[index])
+                                            color: (selectedCategory == index)
                                                 ? AppColors.dark
                                                 : AppColors.highlight,
                                           ),
@@ -252,7 +269,9 @@ class _HomeState extends State<Home> {
                                                 .primaryTextTheme
                                                 .titleSmall!
                                                 .copyWith(
-                                                  color: (flage[index])
+                                                  color:
+                                                      (selectedCategory ==
+                                                          index)
                                                       ? AppColors.dark
                                                       : Theme.of(
                                                           context,
@@ -266,7 +285,9 @@ class _HomeState extends State<Home> {
                                                 .titleSmall!
                                                 .copyWith(
                                                   fontSize: 10,
-                                                  color: (flage[index])
+                                                  color:
+                                                      (selectedCategory ==
+                                                          index)
                                                       ? AppColors.dark
                                                       : Theme.of(
                                                           context,
@@ -292,17 +313,19 @@ class _HomeState extends State<Home> {
                 ),
                 if (isLoading)
                   const Center(child: CircularProgressIndicator())
-                else if (tasks.isEmpty)
+                else if (filteredTasks.isEmpty)
                   const Text('No tasks yet')
                 else
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: tasks.length,
+                    itemCount: filteredTasks.length,
                     itemBuilder: (context, index) {
-                      final t = tasks[index];
+                      final t = filteredTasks[index];
                       return TaskCard(
+                        key: ValueKey(t["id"]),
                         id: t["id"],
+                        priorityId: t["priority"],
                         title: t["task"],
                         category: t["category"],
                         time: t["time"],

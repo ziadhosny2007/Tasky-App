@@ -1,4 +1,6 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tasky/core/routes/app_routes.dart';
 import 'package:tasky/core/themes/app_colors.dart';
@@ -37,6 +39,20 @@ class _OnboardingState extends State<Onboarding> {
       "btn": "Get Started",
     },
   ];
+  SharedPreferencesAsync sharedPreferences = SharedPreferencesAsync();
+  PageController? controller;
+  @override
+  void initState() {
+    controller = PageController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
+
   int selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -59,7 +75,7 @@ class _OnboardingState extends State<Onboarding> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.only(bottom: 70),
+        padding: EdgeInsets.only(bottom: 70),
         child: Center(
           child: Column(
             mainAxisAlignment: .center,
@@ -67,76 +83,108 @@ class _OnboardingState extends State<Onboarding> {
               SizedBox(
                 height: 260,
                 width: 260,
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: ClipOval(
-                        child: Container(
-                          alignment: .center,
-                          height: 260,
-                          width: 260,
-                          color: AppColors.highlight.withAlpha(32),
+                child: PageView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  controller: controller,
+                  itemCount: list.length,
+                  onPageChanged: (value) {
+                    selectedIndex = value;
+                    setState(() {});
+                  },
+                  itemBuilder: (context, index) {
+                    return SizedBox(
+                      height: 260,
+                      width: 260,
+                      child: FadeInUp(
+                        duration: Duration(milliseconds: 500),
+                        animate: true,
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: ClipOval(
+                                child: Container(
+                                  alignment: .center,
+                                  height: 260,
+                                  width: 260,
+                                  color: AppColors.highlight.withAlpha(32),
+                                ),
+                              ),
+                            ),
+                            FadeInDown(
+                              duration: Duration(milliseconds: 400),
+                              animate: true,
+                              child: Stack(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      height: 170,
+                                      width: 170,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.highlight,
+                                        borderRadius: BorderRadius.circular(48),
+                                      ),
+                                      child: Icon(
+                                        list[index]["icon1"],
+                                        size: 90,
+                                        color: AppColors.white,
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 24,
+                                    right: 14,
+                                    child: Container(
+                                      height: 64,
+                                      width: 64,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.highlight2,
+                                        borderRadius: BorderRadius.circular(22),
+                                      ),
+                                      child: Icon(
+                                        list[index]["icon2"],
+                                        size: 34,
+                                        color: AppColors.dark,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    Stack(
-                      children: [
-                        Center(
-                          child: Container(
-                            height: 170,
-                            width: 170,
-                            decoration: BoxDecoration(
-                              color: AppColors.highlight,
-                              borderRadius: BorderRadius.circular(48),
-                            ),
-                            child: Icon(
-                              list[selectedIndex]["icon1"],
-                              size: 90,
-                              color: AppColors.white,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 24,
-                          right: 14,
-                          child: Container(
-                            height: 64,
-                            width: 64,
-                            decoration: BoxDecoration(
-                              color: AppColors.highlight2,
-                              borderRadius: BorderRadius.circular(22),
-                            ),
-                            child: Icon(
-                              list[selectedIndex]["icon2"],
-                              size: 34,
-                              color: AppColors.dark,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
               SizedBox(height: 40),
-              SizedBox(
-                width: 330,
-                child: Text(
-                  textAlign: .center,
-                  list[selectedIndex]["title"],
-                  style: Theme.of(
-                    context,
-                  ).primaryTextTheme.titleLarge!.copyWith(fontSize: 26),
+              FadeInLeft(
+                duration: Duration(milliseconds: 400),
+                animate: true,
+                from: 0,
+                child: SizedBox(
+                  width: 330,
+                  child: Text(
+                    textAlign: .center,
+                    list[selectedIndex]["title"],
+                    style: Theme.of(
+                      context,
+                    ).primaryTextTheme.titleLarge!.copyWith(fontSize: 26),
+                  ),
                 ),
               ),
               SizedBox(height: 12),
-              SizedBox(
-                width: 330,
-                child: Text(
-                  textAlign: .center,
-                  list[selectedIndex]["des"],
-                  style: Theme.of(context).primaryTextTheme.titleLarge!
-                      .copyWith(fontSize: 16, color: Color(0xff6E6B7B)),
+              FadeInUp(
+                duration: Duration(milliseconds: 400),
+                animate: true,
+                child: SizedBox(
+                  width: 330,
+                  child: Text(
+                    textAlign: .center,
+                    list[selectedIndex]["des"],
+                    style: Theme.of(context).primaryTextTheme.titleLarge!
+                        .copyWith(fontSize: 16, color: Color(0xff6E6B7B)),
+                  ),
                 ),
               ),
             ],
@@ -163,11 +211,23 @@ class _OnboardingState extends State<Onboarding> {
                 ),
               ),
               MaterialButton(
-                onPressed: () {
+                onPressed: () async {
                   if (selectedIndex < 2) {
                     selectedIndex += 1;
-                    setState(() {});
+                    setState(() {
+                      controller?.animateToPage(
+                        selectedIndex,
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeIn,
+                      );
+                    });
                   } else {
+                    controller?.animateToPage(
+                      selectedIndex,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeIn,
+                    );
+                    await sharedPreferences.setBool("isFirst", false);
                     Navigator.of(
                       context,
                     ).pushReplacementNamed(AppRoutes.appSection);

@@ -7,47 +7,43 @@ import 'package:tasky/screens/claendar.dart';
 import 'package:tasky/screens/home.dart';
 import 'package:tasky/screens/profile.dart';
 
-class AppSection extends StatefulWidget {
+class AppSection extends StatelessWidget {
   const AppSection({super.key});
 
-  @override
-  State<AppSection> createState() => _AppSectionState();
-}
-
-class _AppSectionState extends State<AppSection> {
-  final PageController controller = PageController();
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+  static const List<Widget> pages = [Home(), Claendar(), Profile()];
 
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<AppSectionCubit>();
 
-    return Scaffold(
-      body: PageView(
-        controller: controller,
-        onPageChanged: (value) {
-          cubit.getIndex(value);
-        },
-        children: const [Home(), Claendar(), Profile()],
-      ),
-      bottomNavigationBar: BlocBuilder<AppSectionCubit, AppSectionState>(
-        builder: (context, state) {
-          return BottomNavigationBar(
-            currentIndex: state.index,
-            onTap: (value) {
-              cubit.getIndex(value);
-
-              controller.animateToPage(
-                value,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOutCubic,
-              );
+    return BlocBuilder<AppSectionCubit, AppSectionState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onHorizontalDragEnd: (details) {
+              final v = details.primaryVelocity ?? 0;
+              if (v < -300 && state.index < pages.length - 1) {
+                cubit.getIndex(
+                  state.index + 1,
+                ); // سحب لليسار -> الصفحة اللي بعدها
+              } else if (v > 300 && state.index > 0) {
+                cubit.getIndex(
+                  state.index - 1,
+                ); // سحب لليمين -> الصفحة اللي قبلها
+              }
             },
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              child: KeyedSubtree(
+                key: ValueKey(state.index),
+                child: pages[state.index],
+              ),
+            ),
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: state.index,
+            onTap: cubit.getIndex,
             type: BottomNavigationBarType.fixed,
             selectedItemColor: AppColors.highlight,
             unselectedItemColor: const Color(0xff6E6B7B),
@@ -77,9 +73,9 @@ class _AppSectionState extends State<AppSection> {
                 label: 'Profile',
               ),
             ],
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

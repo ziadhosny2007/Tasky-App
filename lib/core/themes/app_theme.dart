@@ -25,6 +25,7 @@ class AppTheme {
         fontWeight: .bold,
       ),
     ),
+
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: Color(0xffffffff),
     ),

@@ -1,32 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasky/core/routes/app_routes.dart';
 import 'package:tasky/core/themes/app_colors.dart';
 
-class Splash extends StatefulWidget {
+class Splash extends StatelessWidget {
   const Splash({super.key});
-
-  @override
-  State<Splash> createState() => _SplashState();
-}
-
-class _SplashState extends State<Splash> {
-  double value = 0;
-
-  void loading() async {
-    for (var i = 0; i < 10; i++) {
-      await Future.delayed(Duration(milliseconds: 200), () {
-        value += 0.1;
-      });
-      setState(() {});
-    }
-    Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
-  }
-
-  @override
-  void initState() {
-    loading();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,17 +42,56 @@ class _SplashState extends State<Splash> {
                 color: AppColors.white,
               ),
             ),
-            SizedBox(
-              height: 4,
-              width: 140,
-              child: LinearProgressIndicator(
-                borderRadius: BorderRadius.circular(4),
-                color: AppColors.highlight2,
-                value: value,
-              ),
-            ),
+            LoadingWidget(sharedPreferences: SharedPreferencesAsync()),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class LoadingWidget extends StatefulWidget {
+  LoadingWidget({super.key, required this.sharedPreferences});
+  SharedPreferencesAsync sharedPreferences;
+
+  @override
+  State<LoadingWidget> createState() => _LoadingWidgetState();
+}
+
+class _LoadingWidgetState extends State<LoadingWidget> {
+  double value = 0;
+
+  void loading() async {
+    for (var i = 0; i < 10; i++) {
+      await Future.delayed(Duration(milliseconds: 100), () {
+        value += 0.1;
+      });
+      setState(() {});
+    }
+    bool? flage = await widget.sharedPreferences.getBool("isFirst");
+    if (flage == false) {
+      Navigator.of(context).pushReplacementNamed(AppRoutes.appSection);
+    } else {
+      Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
+    }
+  }
+
+  @override
+  void initState() {
+    loading();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 4,
+      width: 140,
+      child: LinearProgressIndicator(
+        borderRadius: BorderRadius.circular(4),
+        color: AppColors.highlight2,
+        value: value,
       ),
     );
   }

@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:tasky/core/db/sqldb.dart';
 import 'package:tasky/core/themes/app_colors.dart';
 
 // ignore: must_be_immutable
 class TaskCard extends StatefulWidget {
   TaskCard({
     super.key,
-    required this.id,
+    required this.priorityId,
     required this.title,
     required this.category,
     required this.time,
     required this.isdone,
+    required this.id,
   });
-  late int id;
+  late int priorityId;
   String title;
   String category;
   String time;
   int isdone;
+  int id;
 
   List<Map> prority = [
     {"name": "Low", "color": Color(0xff3DBE8B)},
@@ -28,14 +31,23 @@ class TaskCard extends StatefulWidget {
 }
 
 class _TaskCardState extends State<TaskCard> {
+  Sqldb db = Sqldb();
+  Future<int> exciuteTask(bool x) async {
+    int isDone = (x) ? 1 : 0;
+    final data = await db.updateData(
+      "UPDATE tasks SET is_done =$isDone WHERE id = ${widget.id}",
+    );
+    return data;
+  }
+
   late bool v = (widget.isdone == 0) ? false : true;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         HapticFeedback.lightImpact();
-        v = !v;
-        setState(() {});
+        setState(() => v = !v);
+        await exciuteTask(v);
       },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -53,8 +65,14 @@ class _TaskCardState extends State<TaskCard> {
             title: Text(
               widget.title,
               maxLines: 1,
-
-              style: Theme.of(context).primaryTextTheme.titleMedium,
+              style: Theme.of(context).primaryTextTheme.titleMedium!.copyWith(
+                decoration: v
+                    ? TextDecoration.lineThrough
+                    : TextDecoration.none,
+                color: v ? const Color(0xff6E6B7B) : null,
+                decorationThickness: 2,
+                decorationColor: const Color(0xff6E6B7B),
+              ),
             ),
             subtitle: Row(
               children: [
@@ -73,14 +91,14 @@ class _TaskCardState extends State<TaskCard> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: widget.prority[widget.id]["color"].withAlpha(39),
+                color: widget.prority[widget.priorityId]["color"].withAlpha(39),
               ),
               child: Text(
-                widget.prority[widget.id]["name"],
+                widget.prority[widget.priorityId]["name"],
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
-                  color: widget.prority[widget.id]["color"],
+                  color: widget.prority[widget.priorityId]["color"],
                 ),
               ),
             ),
@@ -88,10 +106,10 @@ class _TaskCardState extends State<TaskCard> {
               scale: 1.6,
               child: Checkbox(
                 value: v,
-                onChanged: (value) {
+                onChanged: (value) async {
                   HapticFeedback.selectionClick();
-                  v = value!;
-                  setState(() {});
+                  setState(() => v = value!);
+                  await exciuteTask(v);
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6),
