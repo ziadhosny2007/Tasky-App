@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tasky/core/themes/app_colors.dart';
 
 class AppTheme {
+   
+
   static ThemeData light = ThemeData(
     scaffoldBackgroundColor: AppColors.backgroundColor,
     cardColor: AppColors.white,

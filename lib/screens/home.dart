@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:tasky/core/db/sqldb.dart';
 import 'package:tasky/core/routes/app_routes.dart';
@@ -36,11 +37,37 @@ class _HomeState extends State<Home> {
     });
   }
 
-  List<Map> categories = [
-    {"icon": Icons.work, "title": "Work", "tasks": 3},
-    {"icon": Icons.person, "title": "Personal", "tasks": 4},
-    {"icon": Icons.shopping_bag_outlined, "title": "Shopping", "tasks": 1},
-    {"icon": Icons.favorite_border_outlined, "title": "Health", "tasks": 2},
+  List<dynamic> get completedTasks => tasks.where((e) => e["is_done"] == 1).toList();
+  List<dynamic> get numOfWorkTasks => tasks
+      .where((e) => e["category"] == "Work")
+      .toList();
+  List<dynamic> get numOfPersonalTasks => tasks
+      .where((e) => e["category"] == "Personal")
+      .toList();
+  List<dynamic> get numOfShoppingTasks => tasks
+      .where((e) => e["category"] == "Shopping")
+      .toList();
+  List<dynamic> get numOfHealthTasks => tasks
+      .where((e) => e["category"] == "Health")
+      .toList();
+
+  List<Map<dynamic, dynamic>> get categories => [
+    {"icon": Icons.work, "title": "Work", "tasks": numOfWorkTasks.length},
+    {
+      "icon": Icons.person,
+      "title": "Personal",
+      "tasks": numOfPersonalTasks.length,
+    },
+    {
+      "icon": Icons.shopping_bag_outlined,
+      "title": "Shopping",
+      "tasks": numOfShoppingTasks.length,
+    },
+    {
+      "icon": Icons.favorite_border_outlined,
+      "title": "Health",
+      "tasks": numOfHealthTasks.length,
+    },
   ];
 
   double get progress {
@@ -139,7 +166,9 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                               Text(
-                                "3 of 5 tasks completed",
+                                (tasks.length != 0)
+                                    ? "${completedTasks.length} of ${tasks.length} tasks completed"
+                                    : "There `s no Tasks Today",
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: .w400,
@@ -350,7 +379,8 @@ class _HomeState extends State<Home> {
           ),
           onPressed: () async {
             HapticFeedback.mediumImpact();
-            await Navigator.of(context).pushNamed(AppRoutes.addTask);
+          //  await Navigator.of(context).pushNamed(AppRoutes.addTask);
+             context.go(AppRoutes.addTask);
             loadTasks();
           },
           child: Icon(Icons.add, size: 32, color: AppColors.white),

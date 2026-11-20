@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:tasky/core/db/sqldb.dart';
+import 'package:tasky/core/routes/app_routes.dart';
 import 'package:tasky/core/themes/app_colors.dart';
 
 class AddTask extends StatefulWidget {
@@ -209,7 +211,8 @@ class _AddTaskState extends State<AddTask> {
                   children: [
                     InkWell(
                       onTap: () {
-                        Navigator.of(context).pop();
+                        //     Navigator.of(context).pop();
+                        context.go(AppRoutes.appSection);
                       },
                       child: Container(
                         alignment: .center,
@@ -303,8 +306,7 @@ class _AddTaskState extends State<AddTask> {
                   style: Theme.of(context).primaryTextTheme.titleMedium,
                 ),
 
-                Row(
-                  mainAxisAlignment: .spaceBetween,
+                Wrap(
                   children: [
                     _pickerBox(
                       icon: Icons.calendar_month,
@@ -427,6 +429,7 @@ class _AddTaskState extends State<AddTask> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: .bold,
+                                  color: Theme.of(context).highlightColor,
                                 ),
                               ),
                             ],
@@ -466,7 +469,8 @@ class _AddTaskState extends State<AddTask> {
               );
 
               if (!mounted) return;
-              Navigator.of(context).pop();
+             // Navigator.of(context).pop();
+             context.go(AppRoutes.appSection);
             },
             height: 56,
             minWidth: 350,

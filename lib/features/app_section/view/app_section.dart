@@ -19,28 +19,7 @@ class AppSection extends StatelessWidget {
     return BlocBuilder<AppSectionCubit, AppSectionState>(
       builder: (context, state) {
         return Scaffold(
-          body: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onHorizontalDragEnd: (details) {
-              final v = details.primaryVelocity ?? 0;
-              if (v < -300 && state.index < pages.length - 1) {
-                cubit.getIndex(
-                  state.index + 1,
-                ); // سحب لليسار -> الصفحة اللي بعدها
-              } else if (v > 300 && state.index > 0) {
-                cubit.getIndex(
-                  state.index - 1,
-                ); // سحب لليمين -> الصفحة اللي قبلها
-              }
-            },
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 250),
-              child: KeyedSubtree(
-                key: ValueKey(state.index),
-                child: pages[state.index],
-              ),
-            ),
-          ),
+          body: pages[state.index],
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: state.index,
             onTap: cubit.getIndex,

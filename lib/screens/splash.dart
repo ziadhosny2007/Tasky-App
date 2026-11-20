@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasky/core/routes/app_routes.dart';
 import 'package:tasky/core/themes/app_colors.dart';
@@ -71,9 +72,11 @@ class _LoadingWidgetState extends State<LoadingWidget> {
     }
     bool? flage = await widget.sharedPreferences.getBool("isFirst");
     if (flage == false) {
-      Navigator.of(context).pushReplacementNamed(AppRoutes.appSection);
+      // Navigator.of(context).pushReplacementNamed(AppRoutes.appSection);
+      context.go(AppRoutes.appSection);
     } else {
-      Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
+      // Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
+      context.go(AppRoutes.onboarding);
     }
   }
 

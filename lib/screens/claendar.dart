@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tasky/core/db/sqldb.dart';
 import 'package:tasky/core/routes/app_routes.dart';
 import 'package:tasky/core/themes/app_colors.dart';
 import 'package:tasky/core/widget/task_card.dart';
+
 class Claendar extends StatefulWidget {
   const Claendar({super.key});
 
@@ -297,8 +299,8 @@ class _ClaendarState extends State<Claendar> {
                               children: [
                                 // Day Number
                                 Container(
-                                  height: 46,
-                                  width: 46,
+                                  height: 40,
+                                  width: 40,
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                     color: selected
@@ -385,8 +387,8 @@ class _ClaendarState extends State<Claendar> {
           onPressed: () async {
             HapticFeedback.mediumImpact();
 
-            await Navigator.of(context).pushNamed(AppRoutes.addTask);
-
+            //  await Navigator.of(context).pushNamed(AppRoutes.addTask);
+            context.go(AppRoutes.addTask);
             if (!mounted) return;
 
             loadTasks();

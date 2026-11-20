@@ -1,5 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tasky/core/routes/app_routes.dart';
@@ -228,9 +229,10 @@ class _OnboardingState extends State<Onboarding> {
                       curve: Curves.easeIn,
                     );
                     await sharedPreferences.setBool("isFirst", false);
-                    Navigator.of(
-                      context,
-                    ).pushReplacementNamed(AppRoutes.appSection);
+                    // Navigator.of(
+                    //   context,
+                    // ).pushReplacementNamed(AppRoutes.appSection);
+                    context.go(AppRoutes.appSection);
                   }
                 },
                 shape: RoundedRectangleBorder(
