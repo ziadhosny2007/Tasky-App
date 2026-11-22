@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tasky/core/db/sqldb.dart';
 import 'package:tasky/core/themes/app_colors.dart';
+import 'package:tasky/generated/l10n.dart';
 
 // ignore: must_be_immutable
 class TaskCard extends StatefulWidget {
@@ -22,9 +23,9 @@ class TaskCard extends StatefulWidget {
   int id;
 
   List<Map> prority = [
-    {"name": "Low", "color": Color(0xff3DBE8B)},
-    {"name": "Medium", "color": Color(0xffF5A524)},
-    {"name": "High", "color": Color(0xffE5484D)},
+    {"color": Color(0xff3DBE8B)},
+    {"color": Color(0xffF5A524)},
+    {"color": Color(0xffE5484D)},
   ];
   @override
   State<TaskCard> createState() => _TaskCardState();
@@ -43,6 +44,18 @@ class _TaskCardState extends State<TaskCard> {
   late bool v = (widget.isdone == 0) ? false : true;
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+    final priorityNames = [
+      l10n.priorityLow,
+      l10n.priorityMedium,
+      l10n.priorityHigh,
+    ];
+    final categoryNames = {
+      "Work": l10n.categoryWork,
+      "Personal": l10n.categoryPersonal,
+      "Shopping": l10n.categoryShopping,
+      "Health": l10n.categoryHealth,
+    };
     return GestureDetector(
       onTap: () async {
         HapticFeedback.lightImpact();
@@ -77,7 +90,10 @@ class _TaskCardState extends State<TaskCard> {
             subtitle: Row(
               children: [
                 Text(
-                  "${widget.category} •  ${widget.time}",
+                  l10n.taskMeta(
+                    categoryNames[widget.category] ?? widget.category,
+                    widget.time,
+                  ),
                   maxLines: 1,
                   style: TextStyle(
                     fontSize: 12,
@@ -94,7 +110,7 @@ class _TaskCardState extends State<TaskCard> {
                 color: widget.prority[widget.priorityId]["color"].withAlpha(39),
               ),
               child: Text(
-                widget.prority[widget.priorityId]["name"],
+                priorityNames[widget.priorityId],
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,

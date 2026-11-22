@@ -7,6 +7,7 @@ import 'package:tasky/core/db/sqldb.dart';
 import 'package:tasky/core/routes/app_routes.dart';
 import 'package:tasky/core/themes/app_colors.dart';
 import 'package:tasky/core/widget/task_card.dart';
+import 'package:tasky/generated/l10n.dart';
 
 class Claendar extends StatefulWidget {
   const Claendar({super.key});
@@ -18,8 +19,10 @@ class Claendar extends StatefulWidget {
 class _ClaendarState extends State<Claendar> {
   DateTime currentMonth = DateTime.now();
   DateTime selectedDate = DateTime.now();
-  String get selectedDateString =>
-      DateFormat('EEEE, d MMMM', 'en_US').format(selectedDate);
+  String get selectedDateString => DateFormat(
+    'EEEE, d MMMM',
+    Localizations.localeOf(context).toString(),
+  ).format(selectedDate);
   Set<int> eventDays = {};
   final Sqldb sqldb = Sqldb();
   bool isLoading = true;
@@ -63,25 +66,18 @@ class _ClaendarState extends State<Claendar> {
   }
 
   bool isLoadingEvents = false;
-  final List<String> weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  List<String> get weekDays {
+    final narrow = DateFormat.d(
+      Localizations.localeOf(context).toString(),
+    ).dateSymbols.NARROWWEEKDAYS;
+    return [...narrow.sublist(1), narrow.first];
+  }
 
   String get monthName {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-
-    return '${months[currentMonth.month - 1]} ${currentMonth.year}';
+    return DateFormat(
+      'MMMM y',
+      Localizations.localeOf(context).toString(),
+    ).format(currentMonth);
   }
 
   int get daysInMonth {
@@ -265,6 +261,7 @@ class _ClaendarState extends State<Claendar> {
                     Expanded(
                       child: GridView.builder(
                         physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
                         itemCount: totalCells,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
@@ -309,7 +306,11 @@ class _ClaendarState extends State<Claendar> {
                                     borderRadius: BorderRadius.circular(13),
                                   ),
                                   child: Text(
-                                    '$day',
+                                    NumberFormat.decimalPattern(
+                                      Localizations.localeOf(
+                                        context,
+                                      ).toString(),
+                                    ).format(day),
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -351,7 +352,7 @@ class _ClaendarState extends State<Claendar> {
               if (isLoading)
                 const Center(child: CircularProgressIndicator())
               else if (tasks.isEmpty)
-                const Text('No tasks yet')
+                Text(S.of(context).noTasksYet)
               else
                 ListView.builder(
                   shrinkWrap: true,

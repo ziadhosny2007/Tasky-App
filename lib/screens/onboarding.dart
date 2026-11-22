@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tasky/core/routes/app_routes.dart';
 import 'package:tasky/core/themes/app_colors.dart';
+import 'package:tasky/generated/l10n.dart';
 
 class Onboarding extends StatefulWidget {
   const Onboarding({super.key});
@@ -17,27 +18,15 @@ class _OnboardingState extends State<Onboarding> {
   List<Map> list = [
     {
       "icon1": Icons.format_list_bulleted_rounded,
-      "title": "Keep every task in its place",
-      "des":
-          "Sort your to-dos into Work, Personal, Shopping and Health so nothing gets lost.",
       "icon2": Icons.folder_open,
-      "btn": "Next",
     },
     {
       "icon1": Icons.flag_outlined,
-      "title": "Focus on what matters",
-      "des":
-          "Mark tasks Low, Medium or High and start your day with the ones that count.",
       "icon2": Icons.electric_bolt_rounded,
-      "btn": "Next",
     },
     {
       "icon1": Icons.trending_up_sharp,
-      "title": "See your progress grow",
-      "des":
-          "Watch your daily progress fill up and build a habit of finishing.",
       "icon2": Icons.done,
-      "btn": "Get Started",
     },
   ];
   SharedPreferencesAsync sharedPreferences = SharedPreferencesAsync();
@@ -57,6 +46,18 @@ class _OnboardingState extends State<Onboarding> {
   int selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+    final titles = [
+      l10n.onboarding1Title,
+      l10n.onboarding2Title,
+      l10n.onboarding3Title,
+    ];
+    final descriptions = [
+      l10n.onboarding1Body,
+      l10n.onboarding2Body,
+      l10n.onboarding3Body,
+    ];
+    final buttons = [l10n.next, l10n.next, l10n.getStarted];
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -65,7 +66,7 @@ class _OnboardingState extends State<Onboarding> {
               Navigator.of(context).pushReplacementNamed(AppRoutes.appSection);
             },
             child: Text(
-              "Skip",
+              l10n.skip,
               style: TextStyle(
                 color: AppColors.highlight,
                 fontSize: 15,
@@ -167,7 +168,7 @@ class _OnboardingState extends State<Onboarding> {
                   width: 330,
                   child: Text(
                     textAlign: .center,
-                    list[selectedIndex]["title"],
+                    titles[selectedIndex],
                     style: Theme.of(
                       context,
                     ).primaryTextTheme.titleLarge!.copyWith(fontSize: 26),
@@ -182,7 +183,7 @@ class _OnboardingState extends State<Onboarding> {
                   width: 330,
                   child: Text(
                     textAlign: .center,
-                    list[selectedIndex]["des"],
+                    descriptions[selectedIndex],
                     style: Theme.of(context).primaryTextTheme.titleLarge!
                         .copyWith(fontSize: 16, color: Color(0xff6E6B7B)),
                   ),
@@ -242,7 +243,7 @@ class _OnboardingState extends State<Onboarding> {
                 height: 52,
                 color: AppColors.highlight,
                 child: Text(
-                  list[selectedIndex]["btn"],
+                  buttons[selectedIndex],
                   style: TextStyle(
                     fontWeight: .bold,
                     fontSize: 16,

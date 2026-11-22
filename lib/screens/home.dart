@@ -6,6 +6,7 @@ import 'package:tasky/core/db/sqldb.dart';
 import 'package:tasky/core/routes/app_routes.dart';
 import 'package:tasky/core/themes/app_colors.dart';
 import 'package:tasky/core/widget/task_card.dart';
+import 'package:tasky/generated/l10n.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -24,7 +25,7 @@ class _HomeState extends State<Home> {
     loadTasks();
   }
 
-  final date = DateFormat('MMM d, y').format(DateTime.now());
+  final date = DateFormat('MMM d, y', 'en').format(DateTime.now());
 
   Future<void> loadTasks() async {
     final data = await db.selectData(
@@ -85,10 +86,18 @@ class _HomeState extends State<Home> {
   }
 
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+    final locale = Localizations.localeOf(context).toString();
+    final categoryNames = [
+      l10n.categoryWork,
+      l10n.categoryPersonal,
+      l10n.categoryShopping,
+      l10n.categoryHealth,
+    ];
     final now = DateTime.now();
-    final dayNumber = DateFormat('d').format(now);
-    final dayName = DateFormat('EEEE').format(now);
-    final monthName = DateFormat('MMMM').format(now);
+    final dayNumber = DateFormat('d', locale).format(now);
+    final dayName = DateFormat('EEEE', locale).format(now);
+    final monthName = DateFormat('MMMM', locale).format(now);
 
     return Scaffold(
       body: SafeArea(
@@ -131,7 +140,7 @@ class _HomeState extends State<Home> {
                 SizedBox(
                   width: 248,
                   child: Text(
-                    "What do you want to do today?",
+                    l10n.homeTitle,
                     style: Theme.of(
                       context,
                     ).primaryTextTheme.titleLarge!.copyWith(fontSize: 28),
@@ -158,7 +167,7 @@ class _HomeState extends State<Home> {
                           child: Column(
                             children: [
                               Text(
-                                "Today’s progress",
+                                l10n.todaysProgress,
                                 style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: .bold,
@@ -167,8 +176,11 @@ class _HomeState extends State<Home> {
                               ),
                               Text(
                                 (tasks.length != 0)
-                                    ? "${completedTasks.length} of ${tasks.length} tasks completed"
-                                    : "There `s no Tasks Today",
+                                    ? l10n.tasksCompletedOf(
+                                        completedTasks.length,
+                                        tasks.length,
+                                      )
+                                    : l10n.noTasksToday,
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: .w400,
@@ -202,7 +214,7 @@ class _HomeState extends State<Home> {
                                   ),
                                 ),
                                 Text(
-                                  '${(v * 100).round()}%',
+                                  NumberFormat.percentPattern(locale).format(v),
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 24,
@@ -218,7 +230,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Text(
-                  "Categories",
+                  l10n.categories,
                   style: Theme.of(context).primaryTextTheme.titleMedium,
                 ),
 
@@ -293,7 +305,7 @@ class _HomeState extends State<Home> {
                                                 : AppColors.highlight,
                                           ),
                                           Text(
-                                            categories[index]["title"],
+                                            categoryNames[index],
                                             style: Theme.of(context)
                                                 .primaryTextTheme
                                                 .titleSmall!
@@ -308,7 +320,9 @@ class _HomeState extends State<Home> {
                                                 ),
                                           ),
                                           Text(
-                                            " ${categories[index]["tasks"]} tasks",
+                                            l10n.tasksCount(
+                                              categories[index]["tasks"],
+                                            ),
                                             style: Theme.of(context)
                                                 .primaryTextTheme
                                                 .titleSmall!
@@ -337,13 +351,13 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Text(
-                  "Today’s tasks",
+                  l10n.todaysTasks,
                   style: Theme.of(context).primaryTextTheme.titleMedium,
                 ),
                 if (isLoading)
                   const Center(child: CircularProgressIndicator())
                 else if (filteredTasks.isEmpty)
-                  const Text('No tasks yet')
+                  Text(l10n.noTasksYet)
                 else
                   ListView.builder(
                     shrinkWrap: true,

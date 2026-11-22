@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:tasky/core/db/sqldb.dart';
 import 'package:tasky/core/routes/app_routes.dart';
 import 'package:tasky/core/themes/app_colors.dart';
+import 'package:tasky/generated/l10n.dart';
 
 class AddTask extends StatefulWidget {
   const AddTask({super.key});
@@ -36,9 +37,9 @@ class _AddTaskState extends State<AddTask> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
   List<Map> prority = [
-    {"name": "Low", "color": Color(0xff3DBE8B)},
-    {"name": "Medium", "color": Color(0xffF5A524)},
-    {"name": "High", "color": Color(0xffE5484D)},
+    {"color": Color(0xff3DBE8B)},
+    {"color": Color(0xffF5A524)},
+    {"color": Color(0xffE5484D)},
   ];
   List<Map> categories = [
     {"icon": Icons.work, "title": "Work"},
@@ -89,14 +90,14 @@ class _AddTaskState extends State<AddTask> {
                 children: [
                   CupertinoButton(
                     onPressed: () => Navigator.pop(ctx),
-                    child: const Text('Cancel'),
+                    child: Text(S.of(context).cancel),
                   ),
                   CupertinoButton(
                     onPressed: () {
                       onDone();
                       Navigator.pop(ctx);
                     },
-                    child: const Text('Done'),
+                    child: Text(S.of(context).done),
                   ),
                 ],
               ),
@@ -191,6 +192,18 @@ class _AddTaskState extends State<AddTask> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+    final priorityNames = [
+      l10n.priorityLow,
+      l10n.priorityMedium,
+      l10n.priorityHigh,
+    ];
+    final categoryNames = [
+      l10n.categoryWork,
+      l10n.categoryPersonal,
+      l10n.categoryShopping,
+      l10n.categoryHealth,
+    ];
     final date = DateFormat('MMM d, y').format(selectedDate);
     final time = DateFormat(
       'hh:mm a',
@@ -230,14 +243,14 @@ class _AddTaskState extends State<AddTask> {
                       ),
                     ),
                     Text(
-                      "New task",
+                      l10n.newTask,
                       style: Theme.of(context).primaryTextTheme.titleLarge,
                     ),
                   ],
                 ),
 
                 Text(
-                  "Title",
+                  l10n.fieldTitle,
                   textAlign: .left,
                   style: Theme.of(context).primaryTextTheme.titleMedium,
                 ),
@@ -251,7 +264,7 @@ class _AddTaskState extends State<AddTask> {
                     fillColor: Theme.of(context).secondaryHeaderColor,
                     filled: true,
                     hint: Text(
-                      "Add Title",
+                      l10n.addTitle,
                       style: Theme.of(context).primaryTextTheme.titleMedium!
                           .copyWith(
                             fontWeight: .w400,
@@ -266,7 +279,7 @@ class _AddTaskState extends State<AddTask> {
 
                 const SizedBox(height: 8),
                 Text(
-                  "Description",
+                  l10n.fieldDescription,
                   textAlign: .left,
                   style: Theme.of(context).primaryTextTheme.titleMedium,
                 ),
@@ -285,7 +298,7 @@ class _AddTaskState extends State<AddTask> {
                       fillColor: Theme.of(context).secondaryHeaderColor,
                       filled: true,
                       hint: Text(
-                        "Add details (optional)",
+                        l10n.descriptionHint,
                         style: Theme.of(context).primaryTextTheme.titleMedium!
                             .copyWith(
                               fontWeight: .w400,
@@ -301,7 +314,7 @@ class _AddTaskState extends State<AddTask> {
 
                 const SizedBox(height: 8),
                 Text(
-                  "Date and time",
+                  l10n.fieldDateTime,
                   textAlign: .left,
                   style: Theme.of(context).primaryTextTheme.titleMedium,
                 ),
@@ -323,7 +336,7 @@ class _AddTaskState extends State<AddTask> {
                   ],
                 ),
                 Text(
-                  "Priority",
+                  l10n.fieldPriority,
                   textAlign: .left,
                   style: Theme.of(context).primaryTextTheme.titleMedium,
                 ),
@@ -367,7 +380,7 @@ class _AddTaskState extends State<AddTask> {
                               ),
 
                               child: Text(
-                                prority[index]["name"],
+                                priorityNames[index],
                                 style: Theme.of(context)
                                     .primaryTextTheme
                                     .titleMedium!
@@ -387,7 +400,7 @@ class _AddTaskState extends State<AddTask> {
                 ),
 
                 Text(
-                  "Category",
+                  l10n.fieldCategory,
                   textAlign: .left,
                   style: Theme.of(context).primaryTextTheme.titleMedium,
                 ),
@@ -425,7 +438,7 @@ class _AddTaskState extends State<AddTask> {
                                 color: Theme.of(context).highlightColor,
                               ),
                               Text(
-                                categories[index]["title"],
+                                categoryNames[index],
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: .bold,
@@ -454,14 +467,16 @@ class _AddTaskState extends State<AddTask> {
               final t = title.text.trim();
               if (t.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please enter a title')),
+                  SnackBar(content: Text(l10n.enterTitleError)),
                 );
                 return;
               }
 
               await insertTask(
-                time: time,
-                date: date,
+                time: DateFormat('hh:mm a', 'en').format(
+                  DateTime(2000, 1, 1, selectedTime.hour, selectedTime.minute),
+                ),
+                date: DateFormat('MMM d, y', 'en').format(selectedDate),
                 priority: selectedIndex,
                 category: categories[selectedCategory]["title"],
                 title: t,
@@ -479,7 +494,7 @@ class _AddTaskState extends State<AddTask> {
             ),
             color: AppColors.highlight,
             child: Text(
-              "Save task",
+              l10n.saveTask,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: .bold,

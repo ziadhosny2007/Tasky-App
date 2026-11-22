@@ -1,0 +1,87 @@
+{
+  "@@locale": "en",
+
+  "appName": "Taskly",
+
+  "skip": "Skip",
+  "next": "Next",
+  "getStarted": "Get started",
+  "onboarding1Title": "Keep every task in its place",
+  "onboarding1Body": "Sort your to-dos into Work, Personal, Shopping and Health so nothing gets lost.",
+  "onboarding2Title": "Focus on what matters",
+  "onboarding2Body": "Mark tasks Low, Medium or High and start your day with the ones that count.",
+  "onboarding3Title": "See your progress grow",
+  "onboarding3Body": "Watch your daily progress fill up and build a habit of finishing.",
+
+  "homeTitle": "What do you want to do today?",
+  "todaysProgress": "Today’s progress",
+  "tasksCompletedOf": "{total, plural, =1{{completed} of 1 task completed} other{{completed} of {total} tasks completed}}",
+  "@tasksCompletedOf": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "progressPercent": "{value}",
+  "@progressPercent": {
+    "description": "Progress ring label. Pass a double between 0 and 1, e.g. 0.6 shows 60%",
+    "placeholders": {
+      "value": { "type": "double", "format": "percentPattern" }
+    }
+  },
+  "categories": "Categories",
+  "todaysTasks": "Today’s tasks",
+  "tasksCount": "{count, plural, =1{1 task} other{{count} tasks}}",
+  "@tasksCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "taskMeta": "{category} • {time}",
+  "@taskMeta": {
+    "description": "Sub-line under a task title, e.g. Work • 9:30 AM",
+    "placeholders": {
+      "category": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+
+  "categoryWork": "Work",
+  "categoryPersonal": "Personal",
+  "categoryShopping": "Shopping",
+  "categoryHealth": "Health",
+
+  "priorityLow": "Low",
+  "priorityMedium": "Medium",
+  "priorityHigh": "High",
+
+  "navToday": "Today",
+  "navCalendar": "Calendar",
+  "navProfile": "Profile",
+
+  "newTask": "New task",
+  "fieldTitle": "Title",
+  "titleHint": "Plan the week",
+  "fieldDescription": "Description",
+  "descriptionHint": "Add details (optional)",
+  "fieldDateTime": "Date and time",
+  "fieldPriority": "Priority",
+  "fieldCategory": "Category",
+  "saveTask": "Save task",
+
+  "profileTotal": "Total",
+  "profileCompleted": "Completed",
+  "profilePending": "Pending",
+  "settings": "Settings",
+  "darkMode": "Dark mode",
+  "reminders": "Reminders",
+  "clearCompletedTasks": "Clear completed tasks",
+  "cancel": "Cancel",
+"done": "Done",
+"addTitle": "Add Title",
+"enterTitleError": "Please enter a title",
+"noTasksYet": "No tasks yet",
+"noTasksToday": "There are no tasks today",
+"editProfile": "Edit profile",
+"totalTasks": "Total tasks",
+"preferences": "Preferences",
+"language": "Language"
+}
