@@ -109,22 +109,38 @@ class _AddTaskState extends State<AddTask> {
     );
   }
 
-  void _pickDate() {
-    HapticFeedback.lightImpact();
-    DateTime temp = selectedDate;
-    final now = DateTime.now();
+void _pickDate() {
+  HapticFeedback.lightImpact();
 
-    _showWheelSheet(
-      picker: CupertinoDatePicker(
-        mode: CupertinoDatePickerMode.date,
-        initialDateTime: selectedDate,
-        minimumDate: DateTime(now.year, now.month, now.day),
-        maximumYear: 2100,
-        onDateTimeChanged: (value) => temp = value,
-      ),
-      onDone: () => setState(() => selectedDate = temp),
-    );
-  }
+  final now = DateTime.now();
+
+  DateTime temp = selectedDate.isBefore(
+    DateTime(now.year, now.month, now.day),
+  )
+      ? DateTime(now.year, now.month, now.day)
+      : selectedDate;
+
+  _showWheelSheet(
+    picker: CupertinoDatePicker(
+      mode: CupertinoDatePickerMode.date,
+      initialDateTime: temp,
+      minimumDate: DateTime(now.year, now.month, now.day),
+      maximumDate: DateTime(2100, 12, 31),
+      onDateTimeChanged: (value) {
+        temp = value;
+      },
+    ),
+    onDone: () {
+      setState(() {
+        selectedDate = DateTime(
+          temp.year,
+          temp.month,
+          temp.day,
+        );
+      });
+    },
+  );
+}
 
   void _pickTime() {
     HapticFeedback.lightImpact();

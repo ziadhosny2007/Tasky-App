@@ -182,196 +182,198 @@ class _ClaendarState extends State<Claendar> {
 
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          child: Column(
-            crossAxisAlignment: .start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    monthName,
-                    style: Theme.of(
-                      context,
-                    ).primaryTextTheme.titleLarge!.copyWith(fontSize: 24),
-                  ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      monthName,
+                      style: Theme.of(
+                        context,
+                      ).primaryTextTheme.titleLarge!.copyWith(fontSize: 24),
+                    ),
 
-                  Row(
-                    children: [
-                      _monthButton(
-                        icon: Icons.chevron_left,
-                        onTap: () => changeMonth(-1),
-                      ),
-                      const SizedBox(width: 8),
-                      _monthButton(
-                        icon: Icons.chevron_right,
-                        onTap: () => changeMonth(1),
+                    Row(
+                      children: [
+                        _monthButton(
+                          icon: Icons.chevron_left,
+                          onTap: () => changeMonth(-1),
+                        ),
+                        const SizedBox(width: 8),
+                        _monthButton(
+                          icon: Icons.chevron_right,
+                          onTap: () => changeMonth(1),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 14),
+
+                Container(
+                  height: 340,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).secondaryHeaderColor,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xff1A0D4D).withAlpha(16),
+                        blurRadius: 20,
+                        offset: const Offset(0, 6),
                       ),
                     ],
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 14),
-
-              Container(
-                height: 340,
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).secondaryHeaderColor,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xff1A0D4D).withAlpha(16),
-                      blurRadius: 20,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    // Week Days
-                    SizedBox(
-                      height: 30,
-                      child: Row(
-                        children: weekDays.map((day) {
-                          return Expanded(
-                            child: Center(
-                              child: Text(
-                                day,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF858594),
+                  child: Column(
+                    children: [
+                      // Week Days
+                      SizedBox(
+                        height: 30,
+                        child: Row(
+                          children: weekDays.map((day) {
+                            return Expanded(
+                              child: Center(
+                                child: Text(
+                                  day,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF858594),
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        }).toList(),
+                            );
+                          }).toList(),
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 4),
+                      const SizedBox(height: 4),
 
-                    Expanded(
-                      child: GridView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: totalCells,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 7,
-                              childAspectRatio: 0.85,
-                            ),
-                        itemBuilder: (context, index) {
-                          final day = index - firstDayOffset + 1;
+                      Expanded(
+                        child: GridView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: totalCells,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 7,
+                                childAspectRatio: 0.85,
+                              ),
+                          itemBuilder: (context, index) {
+                            final day = index - firstDayOffset + 1;
 
-                          if (day < 1 || day > daysInMonth) {
-                            return const SizedBox();
-                          }
+                            if (day < 1 || day > daysInMonth) {
+                              return const SizedBox();
+                            }
 
-                          final selected = isSelected(day);
-                          final hasEvent = eventDays.contains(day);
+                            final selected = isSelected(day);
+                            final hasEvent = eventDays.contains(day);
 
-                          return InkWell(
-                            borderRadius: BorderRadius.circular(16),
-                            onTap: () {
-                              setState(() {
-                                selectedDate = DateTime(
-                                  currentMonth.year,
-                                  currentMonth.month,
-                                  day,
-                                );
-                              });
+                            return InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              onTap: () {
+                                setState(() {
+                                  selectedDate = DateTime(
+                                    currentMonth.year,
+                                    currentMonth.month,
+                                    day,
+                                  );
+                                });
 
-                              loadTasks();
-                            },
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // Day Number
-                                Container(
-                                  height: 40,
-                                  width: 40,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: selected
-                                        ? AppColors.highlight
-                                        : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(13),
-                                  ),
-                                  child: Text(
-                                    NumberFormat.decimalPattern(
-                                      Localizations.localeOf(
-                                        context,
-                                      ).toString(),
-                                    ).format(day),
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
+                                loadTasks();
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  // Day Number
+                                  Container(
+                                    height: 40,
+                                    width: 40,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
                                       color: selected
-                                          ? Theme.of(
-                                              context,
-                                            ).secondaryHeaderColor
-                                          : Theme.of(context).highlightColor,
+                                          ? AppColors.highlight
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(13),
+                                    ),
+                                    child: Text(
+                                      NumberFormat.decimalPattern(
+                                        Localizations.localeOf(
+                                          context,
+                                        ).toString(),
+                                      ).format(day),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: selected
+                                            ? Theme.of(
+                                                context,
+                                              ).secondaryHeaderColor
+                                            : Theme.of(context).highlightColor,
+                                      ),
                                     ),
                                   ),
-                                ),
 
-                                const SizedBox(height: 3),
+                                  const SizedBox(height: 3),
 
-                                Container(
-                                  height: 6,
-                                  width: 6,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: hasEvent
-                                        ? AppColors.highlight
-                                        : Colors.transparent,
+                                  Container(
+                                    height: 6,
+                                    width: 6,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: hasEvent
+                                          ? AppColors.highlight
+                                          : Colors.transparent,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 12),
-              Text(
-                selectedDateString,
-                style: Theme.of(context).primaryTextTheme.titleMedium,
-              ),
-              if (isLoading)
-                const Center(child: CircularProgressIndicator())
-              else if (tasks.isEmpty)
-                Text(S.of(context).noTasksYet)
-              else
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: tasks.length,
-                  itemBuilder: (context, index) {
-                    final t = tasks[index];
-                    return TaskCard(
-                      key: ValueKey(t["id"]),
-                      id: t["id"],
-                      priorityId: t["priority"],
-                      title: t["task"],
-                      category: t["category"],
-                      time: t["time"],
-                      isdone: t["is_done"],
-                    );
-                  },
+                SizedBox(height: 12),
+                Text(
+                  selectedDateString,
+                  style: Theme.of(context).primaryTextTheme.titleMedium,
                 ),
-            ],
+                if (isLoading)
+                  const Center(child: CircularProgressIndicator())
+                else if (tasks.isEmpty)
+                  Text(S.of(context).noTasksYet)
+                else
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      final t = tasks[index];
+                      return TaskCard(
+                        key: ValueKey(t["id"]),
+                        id: t["id"],
+                        priorityId: t["priority"],
+                        title: t["task"],
+                        category: t["category"],
+                        time: t["time"],
+                        isdone: t["is_done"],
+                      );
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
       ),
